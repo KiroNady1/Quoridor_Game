@@ -1,0 +1,69 @@
+quoridor-game/
+│
+├── README.md                      # Project overview, screenshots, instructions
+├── .gitignore                     # Ignore build files, IDE files, etc.
+├── LICENSE                        # (Optional) MIT or GPL license
+├── requirements.txt               # Python dependencies (if using Python)
+├── setup.py or pyproject.toml     # (Optional) Installation config
+│
+├── docs/                          # Documentation directory
+│   ├── project_report.pdf         # Final project report (6-10 pages)
+│   ├── design_decisions.md        # (Optional) Design rationale
+│   └── api_reference.md           # (Optional) Code documentation
+│
+├── src/                           # Source code
+│   ├── __init__.py                # Makes src a Python package
+│   │
+│   ├── game/                      # Game engine & logic
+│   │   ├── __init__.py
+│   │   ├── board.py               # Board representation (dual grid)
+│   │   ├── rules.py               # Move validation, win conditions
+│   │   ├── wall_placement.py      # Wall legality with BFS
+│   │   └── game_state.py          # Turn management, reset, save/load
+│   │
+│   ├── ai/                        # AI opponents
+│   │   ├── __init__.py
+│   │   ├── base_ai.py             # Abstract base class for AI
+│   │   ├── random_ai.py           # Easy: random moves
+│   │   ├── greedy_ai.py           # Medium: toward goal, some walls
+│   │   ├── minimax_ai.py          # Hard: minimax with heuristic
+│   │   └── pathfinding.py         # BFS/A* for AI decision making
+│   │
+│   ├── ui/                        # User interface
+│   │   ├── __init__.py
+│   │   ├── main_window.py         # Main GUI window
+│   │   ├── board_renderer.py      # Drawing board, pawns, walls
+│   │   ├── event_handler.py       # Mouse clicks, move selection
+│   │   ├── widgets.py             # Buttons, status panel, wall counters
+│   │   └── assets/                # Images, fonts, styles
+│   │       ├── pawn_red.png
+│   │       ├── pawn_blue.png
+│   │       └── wall.png
+│   │
+│   ├── utils/                     # Helper functions
+│   │   ├── __init__.py
+│   │   ├── constants.py           # Board size, wall counts, colors
+│   │   ├── coord_converters.py    # Cell ↔ pixel ↔ wall coordinates
+│   │   └── file_io.py             # Save/load game state (bonus feature)
+│   │
+│   └── main.py                    # Entry point - launches the game
+│
+├── tests/                         # Unit tests
+│   ├── test_board.py
+│   ├── test_rules.py
+│   ├── test_wall_placement.py
+│   ├── test_ai.py
+│   └── test_integration.py
+│
+├── examples/                      # Example scripts or demos
+│   ├── console_demo.py            # Play without GUI (debugging)
+│   └── benchmark_ai.py            # Compare AI difficulty levels
+│
+├── scripts/                       # Build/dev automation
+│   ├── run_tests.sh               # Run all tests
+│   ├── format_code.py             # Auto-format code
+│   └── generate_report.py         # (Optional) Auto-generate docs
+│
+└── .github/                       # GitHub-specific files
+    └── workflows/                 # (Optional) CI/CD pipeline
+        └── test.yml               # Auto-run tests on push

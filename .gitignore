@@ -1,0 +1,67 @@
+# Bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+virtualenv/
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.directory
+
+# Project specific
+logs/
+screenshots/
+*.log
+game_saves/
+*.json.save
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+
+# OS files
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Jupyter notebooks (if used)
+.ipynb_checkpoints/
+
+# MyPy
+.mypy_cache/
+
+# Pyre type checker
+.pyre/
