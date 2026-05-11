@@ -53,8 +53,7 @@ def get_best_move(board, ai, human, mode):
         orig_r, orig_c = ai.r, ai.c
         ai.r, ai.c = move
 
-        score = minimax(board, human, ai, False, depth - 1,
-                        float('-inf'), float('inf'), weigths)
+        score = search_function(board, ai, human, weigths, depth)
 
         ai.r, ai.c = orig_r, orig_c
 
@@ -134,16 +133,14 @@ def minimax(board: Board, human: Player, ai: Player, maximise: bool,
 
         return best
 
-def easy_search(board, ai, human, mode, depth):
-    minimax(board, human, ai, False, depth - 1,
-                        float('-inf'), float('inf'), mode)
-    pass
+def easy_search(board, ai, human, weigths, depth):
+    return minimax(board, human, ai, False, depth - 1,
+                        float('-inf'), float('inf'), weigths)
 
-def medium_search(board, ai, human, mode, depth):
-    minimax(board, human, ai, False, depth - 1,
-                        float('-inf'), float('inf'), mode)
-    pass
+def medium_search(board, ai, human, weigths, depth):
+    return minimax(board, human, ai, False, depth - 1,
+                        float('-inf'), float('inf'), weigths)
 
-def hard_search():
+def hard_search(board, ai, human, weigths, depth):
     pass
 
