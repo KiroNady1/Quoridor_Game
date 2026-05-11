@@ -83,3 +83,7 @@ def is_wall_placement_valid(board, wall: Wall, players: list[Player]) -> tuple[b
     board._wall_keys.discard(wall.key())
 
     return ok, reason
+
+# To implement
+# def get_valid_walls() -> list[Wall]:
+#     pass
