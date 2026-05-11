@@ -1,5 +1,6 @@
 # file: AI/AI.py
 import copy
+import heapq
 from enum import Enum
 from game.player import Player
 from game.board import Board
@@ -109,7 +110,7 @@ def hard_search(board, ai, human, config):
     best_pawn_move = None
     best_pawn_score = -float('-inf')
     
-    for pawn_move in get_valid_moves(board, ai, human):
+    for move in get_valid_moves(board, ai, human):
         pass
         # Apply move temporarily
         # Call minimax(depth=4, using A* evaluation)
@@ -176,8 +177,58 @@ def minimax(board: Board, human: Player, ai: Player, maximise: bool,
 
         return best
 
-def a_star_distance(board: Board, player : Player):
-    pass
+def a_star_distance(board: Board, player : Player) -> int:
+    """
+    Returns shortest path length from player position to goal row.
+    Uses A* with Manhattan distance heuristic.
+    Returns float('inf') if no path exists.
+    """
+    start = (player.r, player.c)
+    goal_row = player.goal_row
+
+    if start[0] == goal_row:
+        return 0
+
+    # Priority queue (f_score, (row, col))
+    frontier = []
+    heapq.heappush(frontier, (0,start))
+
+    g_scores = {start: 0}
+    explored = set()
+
+    while frontier:
+        _, current = heapq.heappop(frontier)
+        current_row, current_column = current
+        
+        # Skip if already explored with better score
+        if current in explored:
+            continue        
+        if current_row == goal_row:
+            return g_scores[current]
+        
+        explored.add(current)
+        for dr, dc in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+            # Move
+            neighbour_row, neighbour_column = current_row + dr, current_column + dc
+            if not board.can_step(current_row, current_column, neighbour_row, neighbour_column):
+                continue
+            
+            neighbor = (neighbour_row, neighbour_column)
+            neighbor_not_visited = neighbor not in g_scores
+
+            tentative_g = g_scores[current] + 1     # Moved one cell
+            this_path_shorter = tentative_g < g_scores[neighbor]
+
+            if neighbor_not_visited or this_path_shorter:
+                g_scores[neighbor] = tentative_g    # Update score with shorter score
+
+                # Heuristic: row distance to goal (Manhattan)
+                h = abs(neighbour_row - goal_row)
+                f = tentative_g + h
+                heapq.heappush(frontier, (f, neighbor))
+
+    return int('inf')
+
 
 def get_best_wall(board, ai, human, weights):
     if ai.walls_left < 1:
