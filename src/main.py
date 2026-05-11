@@ -49,9 +49,7 @@ def main():
             elif app_state == 'difficulty_menu':
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     btn = renderer.get_difficulty_button_at(mouse_pos)
-                    if btn == 'easy':
-                        pass  # Coming soon – button is visually disabled
-                    elif btn in ('medium', 'hard'):
+                    if btn in ('easy', 'medium', 'hard'):
                         game = Game(game_mode='ai', ai_difficulty=btn)
                         handler = InputHandler(game, renderer)
                         game.set_message(

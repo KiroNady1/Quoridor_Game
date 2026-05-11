@@ -90,7 +90,7 @@ class GameRenderer:
         self.screen.blit(sub, sub.get_rect(center=(WIN_W // 2, 210)))
 
         # Easy – disabled with Coming Soon badge
-        self._draw_disabled_btn(self.btn_easy, "Easy", mouse_pos)
+        self._draw_styled_btn(self.btn_easy, "Easy", mouse_pos, C_WALL_P2)
 
         # Medium
         self._draw_styled_btn(self.btn_medium, "Medium", mouse_pos, C_WALL_P2)
