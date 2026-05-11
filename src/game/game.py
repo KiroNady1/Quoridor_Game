@@ -47,10 +47,37 @@ class Game:
     def do_ai_move(self):
         """Execute the AI's best move using minimax."""
         from ai.ai import get_best_move, Mode
-        mode = Mode.HARD if self.ai_difficulty == 'hard' else Mode.MEDIUM
+        
+        # Map difficulty to Mode enum
+        if self.ai_difficulty == 'hard':
+            mode = Mode.HARD
+        elif self.ai_difficulty == 'medium':
+            mode = Mode.MEDIUM
+        else:
+            mode = Mode.EASY
+        
+        # Get the AI's move (returns tuple with type and data)
         move = get_best_move(self.board, self.players[1], self.players[0], mode)
-        if move:
-            self.move_pawn(move[0], move[1])
+        
+        if move is None:
+            # No valid moves (shouldn't happen in normal play)
+            self.set_message("AI has no valid moves!", C_ERROR)
+            return
+        
+        # Unpack the move
+        move_type, move_data = move
+        
+        if move_type == 'move':
+            # Pawn move: move_data is (r, c)
+            r, c = move_data
+            self.move_pawn(r, c)
+        elif move_type == 'wall':
+            # Wall placement: move_data is Wall object
+            wall = move_data
+            self.place_wall(wall)
+        else:
+            self.set_message(f"Unknown move type: {move_type}", C_ERROR)
+        
         self.ai_turn_start = None
 
     # ── Player actions ────────────────────────────────────────────────────────
@@ -73,11 +100,13 @@ class Game:
         if self.active.walls_left == 0:
             self.set_message("No walls remaining!", C_ERROR)
             return False
+        
+        wall.owner = self.turn
         ok, reason = self.board.is_wall_placement_valid(wall, self.players)
         if not ok:
             self.set_message(f"Invalid wall: {reason}", C_ERROR)
             return False
-        wall.owner = self.turn
+        
         self.board.add_wall(wall)
         self.active.walls_left -= 1
         self._next_turn()
