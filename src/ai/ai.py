@@ -5,6 +5,7 @@ from game.player import Player
 from game.board import Board
 from game.rules import get_valid_moves
 from ai.bfs_distance import bfs_distance
+from typing import Tuple
 
 class Mode(Enum):
     EASY = "easy"
@@ -16,35 +17,29 @@ def get_config(mode : str):
     if mode == Mode.EASY:
         return{
             "depth" : 2,
-            "weights" : (3,1,1),
+            "weights": (3,1,1),
             "search_function" : easy_search
         }
     elif mode == Mode.MEDIUM:
         return{
             "depth" : 3,
-            "weigths": (10,10,10),
+            "weights": (10,10,10),
             "search_function" : medium_search
         }
     else: # Hard
         return{
-            "depth" : 5,
-            "weights" : (15, 10, 5),
+            "depth": 5,
+            "weights": (15, 10, 5),
             "search_function" : hard_search
 
         }
-
-def get_weights(mode: Mode):
-    #Return (distance_weight, wall_weight, mobility_weight) based on difficulty.
-    if mode == Mode.HARD:
-        return 10, 10, 10
-    else:  # MEDIUM
-        return 5, 5, 5
 
 # === Choose Best Move ===
 def get_best_move(board, ai, human, mode):
     """Find the best pawn move for the AI using minimax with alpha-beta pruning."""
     config = get_config(mode)
     depth = config["depth"]
+    weigths = config["weights"]
     search_function = config["search_function"]
 
     best_score = float('-inf')
@@ -59,7 +54,7 @@ def get_best_move(board, ai, human, mode):
         ai.r, ai.c = move
 
         score = minimax(board, human, ai, False, depth - 1,
-                        float('-inf'), float('inf'), mode)
+                        float('-inf'), float('inf'), weigths)
 
         ai.r, ai.c = orig_r, orig_c
 
@@ -71,8 +66,8 @@ def get_best_move(board, ai, human, mode):
 
 
 # Evaulating score
-def evaluate(board: Board, ai: Player, human: Player, mode: Mode):
-    distance_w, wall_w, mobility_w = get_weights(mode)
+def evaluate(board: Board, ai: Player, human: Player, weights : Tuple[int, int, int]):
+    distance_w, wall_w, mobility_w = weights
 
     ai_dist    = bfs_distance(board, ai)
     human_dist = bfs_distance(board, human)
@@ -91,10 +86,10 @@ def evaluate(board: Board, ai: Player, human: Player, mode: Mode):
 # === Searching best move ===
 
 def minimax(board: Board, human: Player, ai: Player, maximise: bool,
-            depth: int, alpha: float, beta: float, mode: Mode):
+            depth: int, alpha: float, beta: float, weights : Tuple[int, int, int]):
     # Terminal conditions
     if depth == 0:
-        return evaluate(board, ai, human, mode)
+        return evaluate(board, ai, human, weights)
     if ai.r == ai.goal_row:
         return float('inf')
     if human.r == human.goal_row:
@@ -108,7 +103,7 @@ def minimax(board: Board, human: Player, ai: Player, maximise: bool,
             orig_r, orig_c = ai.r, ai.c
             ai.r, ai.c = move
 
-            value = minimax(board, human, ai, False, depth - 1, alpha, beta, mode)
+            value = minimax(board, human, ai, False, depth - 1, alpha, beta, weights)
 
             # Restore position
             ai.r, ai.c = orig_r, orig_c
@@ -127,7 +122,7 @@ def minimax(board: Board, human: Player, ai: Player, maximise: bool,
             orig_r, orig_c = human.r, human.c
             human.r, human.c = move
 
-            value = minimax(board, human, ai, True, depth - 1, alpha, beta, mode)
+            value = minimax(board, human, ai, True, depth - 1, alpha, beta, weights)
 
             # Restore position
             human.r, human.c = orig_r, orig_c
@@ -139,10 +134,14 @@ def minimax(board: Board, human: Player, ai: Player, maximise: bool,
 
         return best
 
-def easy_search():
+def easy_search(board, ai, human, mode, depth):
+    minimax(board, human, ai, False, depth - 1,
+                        float('-inf'), float('inf'), mode)
     pass
 
-def medium_search():
+def medium_search(board, ai, human, mode, depth):
+    minimax(board, human, ai, False, depth - 1,
+                        float('-inf'), float('inf'), mode)
     pass
 
 def hard_search():
