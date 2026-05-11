@@ -53,7 +53,7 @@ def get_best_move(board, ai, human, mode):
         orig_r, orig_c = ai.r, ai.c
         ai.r, ai.c = move
 
-        score = search_function(board, ai, human, weigths, depth)
+        score = search_function(board, ai, human, config)
 
         ai.r, ai.c = orig_r, orig_c
 
@@ -62,7 +62,6 @@ def get_best_move(board, ai, human, mode):
             best_move = move
 
     return best_move
-
 
 # Evaulating score
 def evaluate(board: Board, ai: Player, human: Player, weights : Tuple[int, int, int]):
@@ -83,7 +82,18 @@ def evaluate(board: Board, ai: Player, human: Player, weights : Tuple[int, int, 
     return distance_score + wall_score + mobility_score
 
 # === Searching best move ===
+def easy_search(board, ai, human, config):
+    return minimax(board, human, ai, False, config["depth"] - 1,
+                        float('-inf'), float('inf'), config["weights"])
 
+def medium_search(board, ai, human, config):
+    return minimax(board, human, ai, False, config["depth"] - 1,
+                        float('-inf'), float('inf'), config["weights"])
+
+def hard_search(board, ai, human, config):
+    pass
+
+# === Algorithms ===
 def minimax(board: Board, human: Player, ai: Player, maximise: bool,
             depth: int, alpha: float, beta: float, weights : Tuple[int, int, int]):
     # Terminal conditions
@@ -132,15 +142,4 @@ def minimax(board: Board, human: Player, ai: Player, maximise: bool,
                 break
 
         return best
-
-def easy_search(board, ai, human, weigths, depth):
-    return minimax(board, human, ai, False, depth - 1,
-                        float('-inf'), float('inf'), weigths)
-
-def medium_search(board, ai, human, weigths, depth):
-    return minimax(board, human, ai, False, depth - 1,
-                        float('-inf'), float('inf'), weigths)
-
-def hard_search(board, ai, human, weigths, depth):
-    pass
 
