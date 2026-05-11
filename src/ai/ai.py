@@ -1,9 +1,9 @@
 # file: AI/AI.py
-
+import copy
 from enum import Enum
 from game.player import Player
 from game.board import Board
-from game.rules import get_valid_moves, get_valid_walls
+from game.rules import get_valid_moves, get_valid_walls, is_wall_placement_valid
 from ai.bfs_distance import bfs_distance
 from typing import Tuple
 
@@ -81,8 +81,20 @@ def evaluate(board: Board, ai: Player, human: Player, weights : Tuple[int, int, 
 
     return distance_score + wall_score + mobility_score
 
-def evaluate_wall():
-    pass
+def evaluate_wall(board: Board, ai: Player, original_ai_distance : int, human: Player,
+                  original_human_distance : int, wall) -> int:
+    # Temporarily place wall and calculate distance
+    new_board = copy.deepcopy(board)
+
+    new_board.add_wall(wall)
+    new_ai_distance = a_star_distance(new_board, ai)
+    new_human_distance = a_star_distance(new_board, human)
+
+    human_distance_score = new_human_distance - original_human_distance
+    wall_distance_score = (original_ai_distance - new_ai_distance)
+
+    return (human_distance_score + wall_distance_score) 
+
 
 # === Searching best move ===
 def easy_search(board, ai, human, config):
@@ -164,9 +176,30 @@ def minimax(board: Board, human: Player, ai: Player, maximise: bool,
 
         return best
 
-def a_star_distance():
+def a_star_distance(board: Board, player : Player):
     pass
 
-def get_best_wall():
-    pass
+def get_best_wall(board, ai, human, weights):
+    if ai.walls_left < 1:
+        return None
+
+    original_ai_distance = a_star_distance(board, ai)
+    original_human_distance = a_star_distance(board, human)
+    
+    walls = get_valid_walls()
+    if not walls:
+        return None
+
+    best_wall_score = float('-inf')
+    best_wall = None
+    for wall in walls:
+        if not is_wall_placement_valid(board, wall, ai):
+            continue
+
+        current_wall_score = evaluate_wall(board, ai, original_ai_distance, human, original_human_distance, wall)
+        if current_wall_score > best_wall_score:
+            best_wall_score = current_wall_score
+            best_wall = wall
+
+    return best_wall
 
