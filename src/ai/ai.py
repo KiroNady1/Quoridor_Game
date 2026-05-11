@@ -5,20 +5,19 @@ from game.player import Player
 from game.board import Board
 from game.rules import get_valid_moves
 from ai.bfs_distance import bfs_distance
-from abc import ABC
 
-class AIStrategy(Enum):
+class Mode(Enum):
     MEDIUM = "medium"
     HARD   = "hard"
 
-def get_weights(mode: AIStrategy):
+def get_weights(mode: Mode):
     #Return (distance_weight, wall_weight, mobility_weight) based on difficulty.
-    if mode == AIStrategy.HARD:
+    if mode == Mode.HARD:
         return 10, 10, 10
     else:  # MEDIUM
         return 5, 5, 5
 
-def evaluate(board: Board, ai: Player, human: Player, mode: AIStrategy):
+def evaluate(board: Board, ai: Player, human: Player, mode: Mode):
     distance_w, wall_w, mobility_w = get_weights(mode)
 
     ai_dist    = bfs_distance(board, ai)
@@ -36,9 +35,7 @@ def evaluate(board: Board, ai: Player, human: Player, mode: AIStrategy):
     return distance_score + wall_score + mobility_score
 
 def minimax(board: Board, human: Player, ai: Player, maximise: bool,
-            depth: int, alpha: float, beta: float, mode: AIStrategy):
-    """Minimax Algorithm to choose the best move"""
-    """Choose the move that leads to """
+            depth: int, alpha: float, beta: float, mode: Mode):
     # Terminal conditions
     if depth == 0:
         return evaluate(board, ai, human, mode)
@@ -60,7 +57,6 @@ def minimax(board: Board, human: Player, ai: Player, maximise: bool,
             # Restore position
             ai.r, ai.c = orig_r, orig_c
 
-            # Pruning
             best  = max(best, value)
             alpha = max(alpha, best)
             if beta <= alpha:
@@ -90,7 +86,7 @@ def minimax(board: Board, human: Player, ai: Player, maximise: bool,
 
 def get_best_move(board, ai, human, mode):
     """Find the best pawn move for the AI using minimax with alpha-beta pruning."""
-    depth = 3 if mode == AIStrategy.HARD else 2
+    depth = 3 if mode == Mode.HARD else 2
 
     best_score = float('-inf')
     best_move = None
@@ -113,6 +109,3 @@ def get_best_move(board, ai, human, mode):
             best_move = move
 
     return best_move
-
-
-

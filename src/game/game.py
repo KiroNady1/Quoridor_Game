@@ -46,8 +46,8 @@ class Game:
 
     def do_ai_move(self):
         """Execute the AI's best move using minimax."""
-        from src.ai.ai_strategy import get_best_move, AIStrategy
-        mode = AIStrategy.HARD if self.ai_difficulty == 'hard' else AIStrategy.MEDIUM
+        from ai.ai import get_best_move, Mode
+        mode = Mode.HARD if self.ai_difficulty == 'hard' else Mode.MEDIUM
         move = get_best_move(self.board, self.players[1], self.players[0], mode)
         if move:
             self.move_pawn(move[0], move[1])
