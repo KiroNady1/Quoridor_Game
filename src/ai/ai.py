@@ -7,8 +7,31 @@ from game.rules import get_valid_moves
 from ai.bfs_distance import bfs_distance
 
 class Mode(Enum):
+    EASY = "easy"
     MEDIUM = "medium"
     HARD   = "hard"
+
+# Difficulty Configurations
+def get_config(mode : str):
+    if mode == Mode.EASY:
+        return{
+            "depth" : 2,
+            "weights" : (3,1,1),
+            "search_function" : easy_search
+        }
+    elif mode == Mode.MEDIUM:
+        return{
+            "depth" : 3,
+            "weigths": (10,10,10),
+            "search_function" : medium_search
+        }
+    else: # Hard
+        return{
+            "depth" : 5,
+            "weights" : (15, 10, 5),
+            "search_function" : hard_search
+
+        }
 
 def get_weights(mode: Mode):
     #Return (distance_weight, wall_weight, mobility_weight) based on difficulty.
@@ -17,6 +40,37 @@ def get_weights(mode: Mode):
     else:  # MEDIUM
         return 5, 5, 5
 
+# === Choose Best Move ===
+def get_best_move(board, ai, human, mode):
+    """Find the best pawn move for the AI using minimax with alpha-beta pruning."""
+    config = get_config(mode)
+    depth = config["depth"]
+    search_function = config["search_function"]
+
+    best_score = float('-inf')
+    best_move = None
+
+    moves = get_valid_moves(board, ai, human)
+    if not moves:
+        return None
+
+    for move in moves:
+        orig_r, orig_c = ai.r, ai.c
+        ai.r, ai.c = move
+
+        score = minimax(board, human, ai, False, depth - 1,
+                        float('-inf'), float('inf'), mode)
+
+        ai.r, ai.c = orig_r, orig_c
+
+        if score > best_score:
+            best_score = score
+            best_move = move
+
+    return best_move
+
+
+# Evaulating score
 def evaluate(board: Board, ai: Player, human: Player, mode: Mode):
     distance_w, wall_w, mobility_w = get_weights(mode)
 
@@ -33,6 +87,8 @@ def evaluate(board: Board, ai: Player, human: Player, mode: Mode):
     mobility_score = (ai_moves - human_moves) * mobility_w
 
     return distance_score + wall_score + mobility_score
+
+# === Searching best move ===
 
 def minimax(board: Board, human: Player, ai: Player, maximise: bool,
             depth: int, alpha: float, beta: float, mode: Mode):
@@ -83,29 +139,12 @@ def minimax(board: Board, human: Player, ai: Player, maximise: bool,
 
         return best
 
+def easy_search():
+    pass
 
-def get_best_move(board, ai, human, mode):
-    """Find the best pawn move for the AI using minimax with alpha-beta pruning."""
-    depth = 3 if mode == Mode.HARD else 2
+def medium_search():
+    pass
 
-    best_score = float('-inf')
-    best_move = None
+def hard_search():
+    pass
 
-    moves = get_valid_moves(board, ai, human)
-    if not moves:
-        return None
-
-    for move in moves:
-        orig_r, orig_c = ai.r, ai.c
-        ai.r, ai.c = move
-
-        score = minimax(board, human, ai, False, depth - 1,
-                        float('-inf'), float('inf'), mode)
-
-        ai.r, ai.c = orig_r, orig_c
-
-        if score > best_score:
-            best_score = score
-            best_move = move
-
-    return best_move
