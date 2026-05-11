@@ -65,3 +65,4 @@ desktop.ini
 
 # Pyre type checker
 .pyre/
+src/ai/test.py
