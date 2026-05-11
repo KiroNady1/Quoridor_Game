@@ -84,6 +84,6 @@ def is_wall_placement_valid(board, wall: Wall, players: list[Player]) -> tuple[b
 
     return ok, reason
 
-# To implement
-# def get_valid_walls() -> list[Wall]:
-#     pass
+#To implement
+def get_valid_walls():
+    pass
