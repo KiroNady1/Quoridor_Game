@@ -7,18 +7,29 @@ from game.rules import get_valid_moves
 from ai.evaluation import evaluate
 from ai.models import EvalWeights
 from ai.move_ordering import order_moves
+from ai.transposition import Transposition_Table
+from ai.hasher import Hasher
+
+hasher = Hasher()
 
 def minimax(
-    board: Board,
-    human: Player,
-    ai: Player,
-    maximise: bool,
-    depth: int,
-    alpha: float,
-    beta: float,
-    weights: EvalWeights,
-    use_astar: bool = False,
-) -> float:
+    board,
+    human,
+    ai,
+    maximise,
+    depth,
+    alpha,
+    beta,
+    weights,
+    use_astar=False,
+):
+
+    key = hasher.hash(board, ai, human)
+
+    if key in Transposition_Table:
+        stored_depth, stored_value = Transposition_Table[key]
+        if stored_depth >= depth:
+            return stored_value
 
     if ai.r == ai.goal_row:
         return float("inf")
@@ -27,19 +38,12 @@ def minimax(
         return float("-inf")
 
     if depth == 0:
-        return evaluate(
-            board,
-            ai,
-            human,
-            weights,
-            use_astar,
-        )
+        return evaluate(board, ai, human, weights, use_astar)
 
     if maximise:
         best = float("-inf")
-        
-        moves = order_moves(board, ai, human, get_valid_moves(board, ai, human), use_astar)
-        for move in moves:
+
+        for move in get_valid_moves(board, ai, human):
 
             next_ai = copy.copy(ai)
             next_ai.r, next_ai.c = move
@@ -62,32 +66,31 @@ def minimax(
             if beta <= alpha:
                 break
 
-        return best
+    else:
+        best = float("inf")
 
-    best = float("inf")
+        for move in get_valid_moves(board, human, ai):
 
-    moves = order_moves(board, human, ai, get_valid_moves(board, human, ai), use_astar)
-    for move in moves:
+            next_human = copy.copy(human)
+            next_human.r, next_human.c = move
 
-        next_human = copy.copy(human)
-        next_human.r, next_human.c = move
+            value = minimax(
+                board,
+                next_human,
+                ai,
+                True,
+                depth - 1,
+                alpha,
+                beta,
+                weights,
+                use_astar,
+            )
 
-        value = minimax(
-            board,
-            next_human,
-            ai,
-            True,
-            depth - 1,
-            alpha,
-            beta,
-            weights,
-            use_astar,
-        )
+            best = min(best, value)
+            beta = min(beta, best)
 
-        best = min(best, value)
-        beta = min(beta, best)
+            if beta <= alpha:
+                break
 
-        if beta <= alpha:
-            break
-
+    Transposition_Table[key] = (depth, best)
     return best
