@@ -46,7 +46,7 @@ class Game:
 
     def do_ai_move(self):
         """Execute the AI's best move using minimax."""
-        from ai.ai import get_best_move, Mode
+        from ai.ai_controller import get_best_move, Mode
         
         # Map difficulty to Mode enum
         if self.ai_difficulty == 'hard':
