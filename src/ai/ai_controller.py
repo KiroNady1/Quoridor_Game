@@ -39,6 +39,9 @@ def get_best_move(board, ai, human, mode):
             best_score = score
             best_move = move
 
+    if mode in [Mode.EASY, Mode.MEDIUM]:
+        return ["move", best_move]
+
     best_wall, best_wall_score = get_best_wall_and_score(
         board,
         ai,
