@@ -6,7 +6,7 @@ from game.rules import get_valid_moves
 
 from ai.evaluation import evaluate
 from ai.models import EvalWeights
-
+from ai.move_ordering import order_moves
 
 def minimax(
     board: Board,
@@ -37,8 +37,9 @@ def minimax(
 
     if maximise:
         best = float("-inf")
-
-        for move in get_valid_moves(board, ai, human):
+        
+        moves = order_moves(board, ai, human, get_valid_moves(board, ai, human), use_astar)
+        for move in moves:
 
             next_ai = copy.copy(ai)
             next_ai.r, next_ai.c = move
@@ -65,7 +66,8 @@ def minimax(
 
     best = float("inf")
 
-    for move in get_valid_moves(board, human, ai):
+    moves = order_moves(board, human, ai, get_valid_moves(board, human, ai), use_astar)
+    for move in moves:
 
         next_human = copy.copy(human)
         next_human.r, next_human.c = move
