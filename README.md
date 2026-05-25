@@ -73,13 +73,6 @@ cd src
 python main.py
 ```
 
-### 5. Running Tests (Optional)
-To run the test suite, install `pytest` and execute it from the project root:
-```bash
-pip install pytest
-pytest
-```
-
 ---
 
 ## 🎮 Controls Explanation
