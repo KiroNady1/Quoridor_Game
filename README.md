@@ -147,7 +147,3 @@ Quoridor_Game/
 ```
 
 ---
-
-<div align="center">
-Made with ❤️ using Python & Pygame
-</div>
