@@ -5,9 +5,12 @@ from ai.logger import logger
 from ai.search import minimax
 from ai.wall_strategy import get_best_wall_and_score
 from game.rules import get_valid_moves
+from ai.transposition import Transposition_Table
 
 
 def get_best_move(board, ai, human, mode):
+    # Clear transposition table cache to avoid stale values from previous turns / games
+    Transposition_Table.clear()
 
     config = get_config(mode)
 
