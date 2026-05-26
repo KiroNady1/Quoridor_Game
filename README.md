@@ -14,6 +14,10 @@ A complete, interactive, and feature-rich implementation of the classic abstract
 3. **Wall Placement**: Instead of moving your pawn, you can place a wall. Walls span exactly 2 cells and block movement. Each player starts with **10 walls**.
 4. **No Trapping Rule**: You are forbidden from placing a wall that completely blocks a player from reaching their goal line. There must always remain at least one valid path to the goal for both players.
 
+### ✨ Highlighted Features:
+* **🤖 Smart AI Opponent**: Play against a minimax-powered computer on Easy, Medium, or Hard difficulty.
+* **↩️ Undo / Redo System**: Full support for rolling back and re-playing moves (pawn movements and wall placements). In Player vs. AI mode, undoing rolls back both the AI's response and your last action together for seamless gameplay.
+
 ---
 
 ## 🎬 Demo Video
@@ -83,6 +87,8 @@ The game uses keyboard inputs to switch modes and mouse clicks to perform action
 * **`M`**: Switch to **Move Pawn Mode** (Default)
 * **`H`**: Switch to **Horizontal Wall Mode**
 * **`V`**: Switch to **Vertical Wall Mode**
+* **`U`**: **Undo** the last move (In AI mode, rolls back both the player's and the AI's move)
+* **`Y`**: **Redo** the last undone move
 * **`R`**: **Reset** the current game match
 * **`ESC`**: Return to the **Main Menu** from an active game
 
