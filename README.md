@@ -34,10 +34,10 @@ A complete, interactive, and feature-rich implementation of the classic abstract
 |:---:|:---:|
 | ![Main Menu](screenshots/main_menu.png) | ![Difficulty Menu](screenshots/difficulty_menu.png) |
 
-### 🎮 Gameplay Stages
-| Match Start | Tactical Wall Placement | Victory Screen |
-|:---:|:---:|:---:|
-| ![Gameplay Start](screenshots/gameplay_start.png) | ![Gameplay Mid-game](screenshots/gameplay_mid.png) | ![Gameplay Victory](screenshots/gameplay_win.png) |
+### 🎮 Gameplay Stages & Control Panel
+| Match Start | Tactical Wall Placement | Victory Screen | Controls & State (Undo/Redo) |
+|:---:|:---:|:---:|:---:|
+| ![Gameplay Start](screenshots/gameplay_start.png) | ![Gameplay Mid-game](screenshots/gameplay_mid.png) | ![Gameplay Victory](screenshots/gameplay_win.png) | ![Undo/Redo Controls](screenshots/controls_undo_redo.png) |
 
 ---
 
