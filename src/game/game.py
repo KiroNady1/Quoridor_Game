@@ -10,6 +10,7 @@ class Game:
     """
     Manages turns, applies validated actions, detects win conditions.
     Supports PvP and Human-vs-AI game modes.
+    Supports undo/redo functionality.
     """
 
     def __init__(self, game_mode='pvp', ai_difficulty=None):
@@ -27,6 +28,99 @@ class Game:
         self.game_mode     = game_mode       # 'pvp' or 'ai'
         self.ai_difficulty = ai_difficulty   # None, 'medium', 'hard'
         self.ai_turn_start = None            # timestamp for AI move delay
+
+        # Undo / Redo history
+        self._history:    list[dict] = []    # past snapshots
+        self._redo_stack: list[dict] = []    # undone snapshots
+
+    # ── Snapshot helpers (for undo / redo) ────────────────────────────────────
+
+    def _snapshot(self) -> dict:
+        """Capture current game state as a dictionary."""
+        return {
+            'p0_r': self.players[0].r,
+            'p0_c': self.players[0].c,
+            'p0_walls': self.players[0].walls_left,
+            'p1_r': self.players[1].r,
+            'p1_c': self.players[1].c,
+            'p1_walls': self.players[1].walls_left,
+            'turn': self.turn,
+            'winner': self.winner,
+            'walls': list(self.board.walls),       # shallow copy of wall list
+            'wall_keys': set(self.board._wall_keys),
+        }
+
+    def _restore(self, snap: dict):
+        """Restore game state from a snapshot dictionary."""
+        self.players[0].r = snap['p0_r']
+        self.players[0].c = snap['p0_c']
+        self.players[0].walls_left = snap['p0_walls']
+        self.players[1].r = snap['p1_r']
+        self.players[1].c = snap['p1_c']
+        self.players[1].walls_left = snap['p1_walls']
+        self.turn = snap['turn']
+        self.winner = snap['winner']
+        self.board.walls = list(snap['walls'])
+        self.board._wall_keys = set(snap['wall_keys'])
+
+    def _save_state(self):
+        """Push current state onto history and clear redo stack."""
+        self._history.append(self._snapshot())
+        self._redo_stack.clear()
+
+    # ── Undo / Redo public API ────────────────────────────────────────────────
+
+    def can_undo(self) -> bool:
+        return len(self._history) > 0
+
+    def can_redo(self) -> bool:
+        return len(self._redo_stack) > 0
+
+    def undo(self) -> bool:
+        """Undo the last action. In AI mode, undoes both AI + player moves."""
+        if not self.can_undo():
+            self.set_message("Nothing to undo!", C_TEXT_MUTED)
+            return False
+
+        # Save current state to redo stack
+        self._redo_stack.append(self._snapshot())
+        # Restore previous state
+        snap = self._history.pop()
+        self._restore(snap)
+
+        # In AI mode, if we just restored to the AI's turn,
+        # undo one more step so the player is back to their own turn
+        if self.game_mode == 'ai' and self.turn == 1 and self.can_undo():
+            self._redo_stack.append(self._snapshot())
+            snap = self._history.pop()
+            self._restore(snap)
+
+        self.ai_turn_start = None
+        self.set_message("Undo!  ↩", C_TEXT_MUTED)
+        return True
+
+    def redo(self) -> bool:
+        """Redo a previously undone action. In AI mode, redoes both player + AI moves."""
+        if not self.can_redo():
+            self.set_message("Nothing to redo!", C_TEXT_MUTED)
+            return False
+
+        # Save current state to history
+        self._history.append(self._snapshot())
+        # Restore the next redo state
+        snap = self._redo_stack.pop()
+        self._restore(snap)
+
+        # In AI mode, if we just restored to the AI's turn,
+        # redo one more step so we land back on the player's turn
+        if self.game_mode == 'ai' and self.turn == 1 and self.can_redo():
+            self._history.append(self._snapshot())
+            snap = self._redo_stack.pop()
+            self._restore(snap)
+
+        self.ai_turn_start = None
+        self.set_message("Redo!  ↪", C_TEXT_MUTED)
+        return True
 
     @property
     def active(self) -> Player:
@@ -88,6 +182,7 @@ class Game:
         if (r, c) not in moves:
             self.set_message("Invalid move!", C_ERROR)
             return False
+        self._save_state()
         self.active.r = r
         self.active.c = c
         self._check_win()
@@ -107,6 +202,7 @@ class Game:
             self.set_message(f"Invalid wall: {reason}", C_ERROR)
             return False
         
+        self._save_state()
         self.board.add_wall(wall)
         self.active.walls_left -= 1
         self._next_turn()
@@ -144,3 +240,4 @@ class Game:
         mode = self.game_mode
         diff = self.ai_difficulty
         self.__init__(game_mode=mode, ai_difficulty=diff)
+

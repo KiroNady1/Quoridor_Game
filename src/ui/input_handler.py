@@ -135,9 +135,13 @@ class InputHandler:
     # ── Keyboard ──────────────────────────────────────────────────────────────
 
     def handle_key(self, key):
-        """Handle in-game keys (R, M, H, V). ESC is handled by main loop."""
+        """Handle in-game keys (R, M, H, V, U, Y). ESC is handled by main loop."""
         if key == pygame.K_r:
             self._reset()
+        elif key == pygame.K_u:
+            self._do_undo()
+        elif key == pygame.K_y:
+            self._do_redo()
         elif self.game.is_ai_turn():
             # Block mode-switching during AI turn
             return
@@ -159,13 +163,31 @@ class InputHandler:
                   'wall_v': 'Vertical wall mode'}
         self.game.set_message(labels[mode], C_TEXT_MUTED)
 
-    def _reset(self):
-        self.game.reset()
+    def _clear_ui(self):
+        """Reset all UI selection/hover state."""
         self.mode          = 'move'
         self.pawn_selected = False
         self.valid_moves   = []
         self.hover_wall    = None
         self.hover_cell    = None
+
+    def _reset(self):
+        self.game.reset()
+        self._clear_ui()
+
+    def _do_undo(self):
+        """Undo the last move and reset UI state."""
+        if self.game.is_ai_turn():
+            return
+        self.game.undo()
+        self._clear_ui()
+
+    def _do_redo(self):
+        """Redo a previously undone move and reset UI state."""
+        if self.game.is_ai_turn():
+            return
+        self.game.redo()
+        self._clear_ui()
 
     # ── Coordinate helpers ────────────────────────────────────────────────────
 

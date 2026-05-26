@@ -390,6 +390,8 @@ class GameRenderer:
             ("M", "Move mode"),
             ("H", "Horizontal wall"),
             ("V", "Vertical wall"),
+            ("U", "Undo"),
+            ("Y", "Redo"),
             ("R", "Reset game"),
             ("ESC", "Back to menu"),
         ]

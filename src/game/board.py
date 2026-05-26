@@ -22,6 +22,12 @@ class Board:
         self.walls.append(wall)
         self._wall_keys.add(wall.key())
 
+    def remove_wall(self, wall: Wall):
+        """Remove a wall from the board (used by undo)."""
+        if wall in self.walls:
+            self.walls.remove(wall)
+        self._wall_keys.discard(wall.key())
+
     # ── Movement blocking ─────────────────────────────────────────────────────
 
     def is_blocked(self, r1: int, c1: int, r2: int, c2: int) -> bool:
